@@ -1,7 +1,4 @@
-import os
-import subprocess
-import numpy as np
-import librosa
+import os, subprocess, numpy as np, librosa
 
 # Number of files to process for quick testing per run
 SUBSET = 10
@@ -35,7 +32,7 @@ def convert_and_melspectrogram(src_path, out_dir):
             timeout = TIMEOUT
         )
     except subprocess.TimeoutExpired:
-        print(f"[TIMEDOUT] ---- {stem}")
+        print(f"[TIMED OUT] ---- {stem}")
         return False
     except subprocess.CalledProcessError:
         print(f"[FAILED] ---- {stem}")
@@ -54,30 +51,30 @@ def convert_and_melspectrogram(src_path, out_dir):
     return True
 
 if __name__ == "__main__":
-    # FakeAVCeleb
-    raw_root = "data/raw/fakeav"
-    prep_dir = "data/preprocessed/fakeav"
+    # # FakeAVCeleb
+    # raw_root = "data/raw/fakeav"
+    # prep_dir = "data/preprocessed/fakeav"
     
-    # Determine which stems have already been processed
-    done = {os.path.splitext(f)[0] for f in os.listdir(prep_dir) if f.endswith(".npy")}
+    # # Determine which stems have already been processed
+    # done = {os.path.splitext(f)[0] for f in os.listdir(prep_dir) if f.endswith(".npy")}
 
-    # Gather all .mp4/.wav files under raw_root
-    candidates = []
-    for dp, _, files in os.walk(raw_root):
-        for fn in files:
-            if fn.lower().endswith((".mp4", ".wav")):
-                stem = os.path.splitext(fn)[0]
-                if stem not in done:
-                    candidates.append(os.path.join(dp, fn))
+    # # Gather all .mp4/.wav files under raw_root
+    # candidates = []
+    # for dp, _, files in os.walk(raw_root):
+    #     for fn in files:
+    #         if fn.lower().endswith((".mp4", ".wav")):
+    #             stem = os.path.splitext(fn)[0]
+    #             if stem not in done:
+    #                 candidates.append(os.path.join(dp, fn))
 
-    print(f"\n### {len(candidates)} FAKEAV. Processing {SUBSET}")
+    # print(f"\n### {len(candidates)} FAKEAV. Processing {SUBSET}")
     
-    i = 0
-    for src in candidates:
-        if i >= SUBSET:
-            break
-        if convert_and_melspectrogram(src, prep_dir):
-            i += 1
+    # i = 0
+    # for src in candidates:
+    #     if i >= SUBSET:
+    #         break
+    #     if convert_and_melspectrogram(src, prep_dir):
+    #         i += 1
 
     # ASVspoof2019 LA dev-set
     raw_asv  = "data/raw/asvspoof/LA/ASVspoof2019_LA_dev/flac"
@@ -92,7 +89,7 @@ if __name__ == "__main__":
                 if stem not in done_asv:
                     candidates_asv.append(os.path.join(dp, fn))
 
-    print(f"\n### {len(candidates)} LADEVSET. Processing {SUBSET}")
+    print(f"\n### {len(candidates_asv)} LADEVSET. Processing {SUBSET}")
     
     i = 0
     for src in candidates_asv:
