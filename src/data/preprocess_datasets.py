@@ -32,10 +32,10 @@ def convert_and_melspectrogram(src_path, out_dir):
             timeout = TIMEOUT
         )
     except subprocess.TimeoutExpired:
-        print(f"[TIMED OUT] ---- {stem}")
+        print(f"[TIMED OUT] -- {stem}")
         return False
     except subprocess.CalledProcessError:
-        print(f"[FAILED] ---- {stem}")
+        print(f"[FAILED] -- {stem}")
         return False
 
     # Load wav and compute mel-spectrogram
@@ -44,13 +44,15 @@ def convert_and_melspectrogram(src_path, out_dir):
         mels = librosa.feature.melspectrogram(y = y, sr = sr, n_mels = 64)
         np.save(npy_path, mels)
     except Exception as e:
-        print(f"[ERROR] ---- {stem} → {e}")
+        print(f"[ERROR] -- {stem} → {e}")
         return False
 
-    print(f"[PASS] ---- {stem}")
+    print(f"[PASS] -- {stem}")
     return True
 
 if __name__ == "__main__":
+    
+    # TODO: To use for eval - only coded for preprocessing practice :)
     # # FakeAVCeleb
     # raw_root = "data/raw/fakeav"
     # prep_dir = "data/preprocessed/fakeav"

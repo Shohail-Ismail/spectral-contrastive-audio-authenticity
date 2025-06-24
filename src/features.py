@@ -37,7 +37,7 @@ with open("data/features.csv", "w", newline = "") as f:
         base_name = fn[:-4]
         label = protocol_labels.get(base_name)
         if label is None:
-            print(f"[SKIPPED]  -- No label for {base_name};")
+            print(f"[SKIPPED] -- No label for {base_name};")
             continue
 
         ## Feature extraction
@@ -68,7 +68,7 @@ with open("data/features.csv", "w", newline = "") as f:
 
             # Write features to csv
             writer.writerow([base_name, label, centroid, entropy] + mfcc.tolist() + emb.tolist())
-            print(f"[SUCCESS] - {base_name}")
+            print(f"[SUCCESS] -- {base_name}")
 
         except Exception as e:
-            print(f"[FAILED] - {base_name}: {e}")
+            print(f"[FAILED] -- {base_name}: {e}")
