@@ -22,3 +22,7 @@ https://datashare.ed.ac.uk/handle/10283/3336 -> LA.zip -> data/rawasvspoof
 **mfcc_0...mfcc_12** = average mfcc (13 values)
 
 **emb_0...emb_767** = wav2vec2 embedding (768-dim vector)
+
+## Parallelism
+
+24844 files so parallelism used to speed things up - done before creating training script

@@ -1,17 +1,30 @@
-import os, subprocess, numpy as np, librosa
-
-# Number of files to process for quick testing per run
-SUBSET = 10
+import os, subprocess, numpy as np, librosa, multiprocessing
+from concurrent.futures import ProcessPoolExecutor
 
 # Secs before ffmpeg conversion gives up
 TIMEOUT = 30
 
+# Paths to ASVspoof
+RAW = "data/raw/asvspoof/LA/ASVspoof2019_LA_dev/flac"
+PREP = "data/preprocessed/asvspoof"
+
+# Keeps count of already done files
+done_asv = {os.path.splitext(f)[0] for f in os.listdir(PREP) if f.endswith(".npy")}
+print(f"Skipping {len(done_asv)} as already preprocessed")
+
+
 # Converts raw audio file to 16 kHz mono WAV and mel-spectrogram array
-def convert_and_melspectrogram(src_path, out_dir):
-    os.makedirs(out_dir, exist_ok = True)
+def convert_and_melspectrogram(src_path):
+    
+    os.makedirs(PREP, exist_ok = True)
     stem = os.path.splitext(os.path.basename(src_path))[0]
-    wav_path = os.path.join(out_dir, stem + ".wav")
-    npy_path = os.path.join(out_dir, stem + ".npy")
+    
+    # Avoid redoing prep'd files
+    if stem in done_asv:
+        return stem, True
+    
+    wav_path = os.path.join(PREP, stem + ".wav")
+    npy_path = os.path.join(PREP, stem + ".npy")
 
     # Extract audio only (-vn), resample to 16 kHz mono
     cmd = [
@@ -33,10 +46,10 @@ def convert_and_melspectrogram(src_path, out_dir):
         )
     except subprocess.TimeoutExpired:
         print(f"[TIMED OUT] -- {stem}")
-        return False
+        return stem, False
     except subprocess.CalledProcessError:
         print(f"[FAILED] -- {stem}")
-        return False
+        return stem, False
 
     # Load wav and compute mel-spectrogram
     try:
@@ -44,60 +57,29 @@ def convert_and_melspectrogram(src_path, out_dir):
         mels = librosa.feature.melspectrogram(y = y, sr = sr, n_mels = 64)
         np.save(npy_path, mels)
     except Exception as e:
-        print(f"[ERROR] -- {stem} → {e}")
-        return False
+        return stem, False
 
-    print(f"[PASS] -- {stem}")
-    return True
+    return stem, True
+
 
 if __name__ == "__main__":
     
-    # TODO: To use for eval - only coded for preprocessing practice :)
-    # # FakeAVCeleb
-    # raw_root = "data/raw/fakeav"
-    # prep_dir = "data/preprocessed/fakeav"
-    
-    # # Determine which stems have already been processed
-    # done = {os.path.splitext(f)[0] for f in os.listdir(prep_dir) if f.endswith(".npy")}
-
-    # # Gather all .mp4/.wav files under raw_root
-    # candidates = []
-    # for dp, _, files in os.walk(raw_root):
-    #     for fn in files:
-    #         if fn.lower().endswith((".mp4", ".wav")):
-    #             stem = os.path.splitext(fn)[0]
-    #             if stem not in done:
-    #                 candidates.append(os.path.join(dp, fn))
-
-    # print(f"\n### {len(candidates)} FAKEAV. Processing {SUBSET}")
-    
-    # i = 0
-    # for src in candidates:
-    #     if i >= SUBSET:
-    #         break
-    #     if convert_and_melspectrogram(src, prep_dir):
-    #         i += 1
-
-    # ASVspoof2019 LA dev-set
-    raw_asv  = "data/raw/asvspoof/LA/ASVspoof2019_LA_dev/flac"
-    prep_asv = "data/preprocessed/asvspoof"
-    done_asv = {os.path.splitext(f)[0] for f in os.listdir(prep_asv) if f.endswith(".npy")}
-
+    # List of ASVspoof2019 LA dev-set files to process
     candidates_asv = []
-    for dp, _, files in os.walk(raw_asv):
+    for dp, _, files in os.walk(RAW):
         for fn in files:
             if fn.lower().endswith(".flac"):
-                stem = os.path.splitext(fn)[0]
-                if stem not in done_asv:
-                    candidates_asv.append(os.path.join(dp, fn))
+                candidates_asv.append(os.path.join(dp, fn))
 
-    print(f"\n### {len(candidates_asv)} LADEVSET. Processing {SUBSET}")
+    # Parallelisation
+    # Use max cores
+    NUM_WORKERS = max(1, multiprocessing.cpu_count() - 1)
+    print(f"-- Using {NUM_WORKERS} cores --")
     
-    i = 0
-    for src in candidates_asv:
-        if i >= SUBSET:
-            break
-        if convert_and_melspectrogram(src, prep_asv):
-            i += 1
+    # Run conversions in parallel
+    with ProcessPoolExecutor(max_workers = NUM_WORKERS) as exe:
+        for idx, (stem, success) in enumerate(exe.map(convert_and_melspectrogram, candidates_asv), start = 1):
+            result = "PASS" if success else "FAIL"
+            print(f"- {result}: {stem} ({idx}/{len(candidates_asv)})")
 
     print("\n--- Preprocessing complete ---")
