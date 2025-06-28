@@ -26,3 +26,13 @@ https://datashare.ed.ac.uk/handle/10283/3336 -> LA.zip -> data/rawasvspoof
 ## Parallelism
 
 24844 files so parallelism used to speed things up - done before creating training script
+
+For `preprocess_datasets.py`: reduced time from estimated 8 hours to 40 mins on 11 cores (estimate = time taken for 100 * 2500 (25000 files))
+
+For `features.py`: 1 core takes estimated 8 hours so further optimisations made:
+
+Quantisation = halves memory use and doubles inference speed on CPU -> deepcopies HF model so needs ++ weird code -> MAYBE
+
+Fixed-length = stablisises losses but need sliding window or lose prob important data -> MAYBE
+
+Batch = 8 clips per forward pass so roughh -8x time -> YES (in theory) -> in practice, NO because I/O and Librosa + NumPy stuff before the batch is what takes up time -> not letting it run for 8 hours bruh just refactor preproc in morning cus you can parallelise this -> should have planned your files better. im going back to audiomentations man.

@@ -27,17 +27,15 @@ with open("data/features.csv", "w", newline = "") as f:
     writer.writerow(header)
 
     # Loop over preprocessed mel-spectrograms
-    i = 0
     prep_dir = "data/preprocessed/asvspoof"
-    for fn in os.listdir(prep_dir):
-        if not fn.endswith(".npy"):
-            continue
-
-        # Gets protocol label for each file
+    all_fns = [fn for fn in os.listdir(prep_dir) if fn.endswith(".npy")]
+    total = len(all_fns)
+    
+    for idx, fn in enumerate(all_fns, start = 1):
         base_name = fn[:-4]
         label = protocol_labels.get(base_name)
         if label is None:
-            print(f"[SKIPPED] -- No label for {base_name};")
+            print(f"SKIPPED -- no label for {base_name}")
             continue
 
         ## Feature extraction
@@ -68,7 +66,7 @@ with open("data/features.csv", "w", newline = "") as f:
 
             # Write features to csv
             writer.writerow([base_name, label, centroid, entropy] + mfcc.tolist() + emb.tolist())
-            print(f"[SUCCESS] -- {base_name}")
+            print(f"SUCCESS -- {base_name} : [{idx}/{total}] ")
 
         except Exception as e:
-            print(f"[FAILED] -- {base_name}: {e}")
+            print(f"FAILED -- {base_name}: {e}")

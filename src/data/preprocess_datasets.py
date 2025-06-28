@@ -80,6 +80,4 @@ if __name__ == "__main__":
     with ProcessPoolExecutor(max_workers = NUM_WORKERS) as exe:
         for idx, (stem, success) in enumerate(exe.map(convert_and_melspectrogram, candidates_asv), start = 1):
             result = "PASS" if success else "FAIL"
-            print(f"- {result}: {stem} ({idx}/{len(candidates_asv)})")
-
-    print("\n--- Preprocessing complete ---")
+            print(f"{result}: {stem} ({idx}/{len(candidates_asv)})")
