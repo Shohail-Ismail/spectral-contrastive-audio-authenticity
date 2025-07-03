@@ -32,3 +32,14 @@ For `preprocess_datasets.py`: reduced time from estimated 8 hours to 40 mins on 
 For `features.py`: 1 core takes estimated 8 hours so further optimisations needed -> trialling further optimisations only slowed process down due to inference dominating runtime, some preprocessing still running serially, and padding to the longest clip negating batching/quantisation gains -> decided to run feature extraction overnight as efficiency in this step is not critical to core research.
 
 Final iteration could be optimised by refactoring preprocess_datasets.py to absorb file-loading and numpy work from features.py -> decreases time drastically
+
+## Baseline training
+
+### train_test_split
+Used to ensure random shuffling before split to avoid bias (reproducibility included, seed = 10)
+
+### Feature scaling
+Applied to training and test to bring centroid, mfccs and embeddings onto a common scale for better logreg convergence
+
+### 5 fold CV grid search
+C vals = 0.01, 0.1, 1.0 using GridSearchCV so mean roc auc across 5 folds to give best C value. this optimal C is then used to refit model on full training set.
