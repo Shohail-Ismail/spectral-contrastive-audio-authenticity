@@ -43,3 +43,9 @@ Applied to training and test to bring centroid, mfccs and embeddings onto a comm
 
 ### 5 fold CV grid search
 C vals = 0.01, 0.1, 1.0 using GridSearchCV so mean ROC AUC across 5 folds to give best C value. This optimal C is then used to refit model on full training set.
+
+## Contrastive training
+
+Frozen wav2vec to skip backprop over 300M params (takes estimated training time from ~40 hours to ~20). May gain statistically significant AUC points so shelf that for later when GPU => good way might be to:
+    - run every file through, fit a logreg classifier and report roc-auc
+    - in second run, unfreeze last 1 or 2 transformer layers and fine tune those + the 128-dim projection head -> compare roc auc to see if >=1% change at least from baseline 0.9744
