@@ -1,3 +1,3 @@
 CV best C: 1
-CV mean ROC AUC: 0.9683
-Final ROC AUC: 0.9742
+CV mean ROC AUC: 0.9684
+Final ROC AUC: 0.9744
