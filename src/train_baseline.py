@@ -13,21 +13,21 @@ feats = df.drop(columns = ["file", "label"]).astype("float32")
 feats_train, feats_test, spoof_train, spoof_test = train_test_split(feats, 
                         spoof, test_size = 0.2, random_state = 10)
 
-# Scale features for better logreg conversion
+# Scale features for better logreg convergence
 scaler = StandardScaler().fit(feats_train)
 feats_train_scaled = scaler.transform(feats_train)
 feats_test_scaled = scaler.transform(feats_test)
 
 # Hyperparam tuning to get best regularisation strength (C)
 param_grid = {"C": [0.01, 0.1, 1]}
-grid = GridSearchCV(LogisticRegression(max_iter = 500, random_state = 10), 
+grid = GridSearchCV(LogisticRegression(max_iter = 5000, random_state = 10), 
                     param_grid, scoring = "roc_auc", cv = 5, n_jobs = 4)
 grid.fit(feats_train_scaled, spoof_train)
 best_C = grid.best_params_["C"]
 print(f"Best C = {best_C} --- mean ROC AUC = {grid.best_score_:.4f}")
 
-# TRefit model with best C
-model = LogisticRegression(max_iter = 500, C = best_C)
+# Refit model with best C
+model = LogisticRegression(max_iter = 5000, C = best_C)
 model.fit(feats_train_scaled, spoof_train)
 
 # Evaluate with roc-auc and avg precision

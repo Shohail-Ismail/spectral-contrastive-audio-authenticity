@@ -42,4 +42,4 @@ Used to ensure random shuffling before split to avoid bias (reproducibility incl
 Applied to training and test to bring centroid, mfccs and embeddings onto a common scale for better logreg convergence
 
 ### 5 fold CV grid search
-C vals = 0.01, 0.1, 1.0 using GridSearchCV so mean roc auc across 5 folds to give best C value. this optimal C is then used to refit model on full training set.
+C vals = 0.01, 0.1, 1.0 using GridSearchCV so mean ROC AUC across 5 folds to give best C value. This optimal C is then used to refit model on full training set.

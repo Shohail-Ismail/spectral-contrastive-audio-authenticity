@@ -15,8 +15,6 @@ print(f"Skipping {len(done_asv)} as already preprocessed")
 
 # Converts raw audio file to 16 kHz mono WAV and mel-spectrogram array
 def convert_and_melspectrogram(src_path):
-    
-    os.makedirs(PREP, exist_ok = True)
     stem = os.path.splitext(os.path.basename(src_path))[0]
     
     # Avoid redoing prep'd files
