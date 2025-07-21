@@ -80,14 +80,16 @@ model = ProjectionNet().to(device)
 opt = optim.Adam(model.parameters(), lr=1e-4)
 
 dataset = ContrastiveDataset("data/preprocessed/asvspoof")
-loader = DataLoader(dataset, batch_size=1, shuffle=True)
+loader = DataLoader(dataset, bbatch_size=4, shuffle=True, num_workers=4)
 
-# Train for a tiny subset (limit to 50 anchors)
-losses = []
-LIMIT = 50
+# # Train for a tiny subset (limit to 50 anchors)
+# LIMIT = 50
 
 print("Starting contrastive training")
-for epoch in range(2):
+losses = []
+EPOCHS = 5
+
+for epoch in range(EPOCHS):
     epoch_losses = []
     for idx, (path_a, path_p, _, path_n, _) in enumerate(loader, start=1):
         
@@ -95,9 +97,6 @@ for epoch in range(2):
         path_a = path_a[0]
         path_p = path_p[0]
         path_n = path_n[0]
-        
-        if idx > LIMIT:
-            break
         
         # Load audio at 16khz
         y_a, _ = librosa.load(path_a, sr=16000)
@@ -130,11 +129,11 @@ for epoch in range(2):
         
     avg_loss = sum(losses)/len(losses)
     print(f"Epoch {epoch + 1} --- avg loss: {avg_loss:.4f}")
+    
+    
 
 # Save weights and metrics
-# os.makedirs("models", exist_ok=True)
 torch.save(model.state_dict(), "models/contrastive_asvspoof.pth")
-# os.makedirs("results", exist_ok=True)
 with open("results/contrastive_metrics.json", "w") as f:
     if len(losses) > 0:
         avg_loss = sum(losses)/len(losses)
