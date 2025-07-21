@@ -80,10 +80,7 @@ model = ProjectionNet().to(device)
 opt = optim.Adam(model.parameters(), lr=1e-4)
 
 dataset = ContrastiveDataset("data/preprocessed/asvspoof")
-loader = DataLoader(dataset, bbatch_size=4, shuffle=True, num_workers=4)
-
-# # Train for a tiny subset (limit to 50 anchors)
-# LIMIT = 50
+loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=4)
 
 print("Starting contrastive training")
 losses = []
@@ -140,4 +137,4 @@ with open("results/contrastive_metrics.json", "w") as f:
     else:
         avg_loss = None
     json.dump({"avg_loss": avg_loss}, f)
-print("ouch my brain 29. also model and metrics saved.")
+print("Model and metrics saved")
