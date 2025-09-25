@@ -1,4 +1,4 @@
-# spectral-contrastive-audio-authenticity
+# Spectral Contrastive Audio Authenticity
 Audio deepfake detection with novel spectral-contrastive loss
 
 
