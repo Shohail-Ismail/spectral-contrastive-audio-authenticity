@@ -2,15 +2,18 @@
 Audio deepfake detection with novel spectral-contrastive loss.
 
 
-## data acquisition
+## Data Acquisition
 ### FakeAVCeleb
 https://www.kaggle.com/datasets/sardertanvirahmed/fakeavcaleb -> data/raw/fakeav
 
 ### ASVspoof2019 LA dev-set
 https://datashare.ed.ac.uk/handle/10283/3336 -> LA.zip -> data/rawasvspoof
 
+---
 
-### Header:
+## Implementation
+
+## Header:
 **file** = ID from asvspoof2019 LA dev set (e.g. LA_0001)
 
 **label** = 0 = real human speech , 1 = spoofed audio (as specified in `ASVspoof2019.LA.cm.dev.trl.txt`) 
