@@ -1,19 +1,19 @@
 # Spectral Contrastive Audio Authenticity
-Audio deepfake detection with novel spectral-contrastive loss.
+This repo documents my independent, research-oriented project on detecting audio deepfakes, building on my work in AI mis/disinformation detection (such as AtomicDeFake). 
 
-WIP - paused from ~07/2025, resuming ~ 04/26 | 05/26
+The project is a CPU-only research prototype for audio deepfake detection using frozen Wav2Vec2 embeddings, spectral features, and an in-progress contrastive training branch. The current repo includes a validated logreg baseline, with downstream contrastive evaluation/testing remains in progress.
 
-## Data Acquisition
+ --  WIP --
+
+## Datasets
 ### FakeAVCeleb
 https://github.com/DASH-Lab/FakeAVCeleb -> data/raw/fakeav
 
 ### ASVspoof2019 LA dev-set
-https://huggingface.co/datasets/LanceaKing/asvspoof2019 -> LA.zip -> data/rawasvspoof -> data/raw/fakeav
+https://www.kaggle.com/datasets/awsaf49/asvpoof-2019-dataset -> LA.zip -> data/rawasvspoof -> data/raw/fakeav
 
----
 
 # Rough notes
-
 ## Implementation
 
 ## Header:
@@ -27,11 +27,9 @@ https://huggingface.co/datasets/LanceaKing/asvspoof2019 -> LA.zip -> data/rawasv
 
 **mfcc_0...mfcc_12** = average mfcc (13 values)
 
-**emb_0...emb_767** = wav2vec2 embedding (768-dim vector)
-
 ## Parallelism
 
-24844 files so parallelism used to speed things up - done before creating training script
+24K+ files so parallelism used to speed things up - done before creating training script
 
 For `preprocess_datasets.py`: reduced time from estimated 8 hours to 40 mins on 11 cores (estimate = time taken for 100 * 2500 (25000 files))
 
